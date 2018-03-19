@@ -1,4 +1,4 @@
-*A few scripts for fun*
+*A few scripts for fun*<br />
 This repository includes a list of bash scripts I created out of curiosity.
 
 How to run: 
