@@ -1,5 +1,6 @@
 #Philip B.
 #Simple script welcome screen for terminal
+#Added to file: .bash_profile in home directory
 # font color : Bold blue
 color='\033[1;34m'
 
@@ -24,10 +25,17 @@ var=(" -1 Corinthians 10:13 -- There hath no temptation taken you but such as is
 \n \t\t\t\t\t\t\t- Galatians 6:9 Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up." )
 
 # Welcome message ! Edit it with your name
-
-echo -e "${color}--------------------------------------------------------------------------------"
-echo "****************             Welcome back Phil!             *****************"
-echo -e "\n${var[$a]}"
+# Welcome message ! Edit it with your name
+COLUMNS=$(tput cols)
+tmp1="====================            Welcome back Phil!             ===================="
+printf "%*s\n" $(((${#tmp1}+$COLUMNS)/2)) "$tmp1"
+#  "\n${var[$a]}"
 echo -e "--------------------------------------------------------------------------------${BC}"
+
+
+#echo -e "${color}--------------------------------------------------------------------------------"
+#echo "****************             Welcome back Phil!             *****************"
+#echo -e "\n${var[$a]}"
+#echo -e "--------------------------------------------------------------------------------${BC}"
 
 #end of code
