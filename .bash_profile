@@ -2,17 +2,20 @@
 #Simple script welcome screen for terminal
 #Added to file: .bash_profile in home directory
 # font color : Bold blue
+function title {
+   echo -ne "\033]0;"$*"\007"
+}
 color='\033[1;34m'
 
-# font color : green
+# font color : white
 BC='\033[0;32m'
 
 # To extract ones digit of second from system clock
 a=`date|cut -c 19`
 #add animation later
 # Array that all the quotes
-var=(" -1 Corinthians 10:13 -- There hath no temptation taken you but such as is common to man: but God is faithful, who will not suffer you to be tempted above that ye are able; but will with the temptation also make a way to escape, that ye may be able to bear it.
-\n \t\t\t\t\t\t\t-1 Corinthians 10:31 " " Whether therefore ye eat, or drink, or whatsoever ye do, do all to the glory of God..
+var=("Mark 8:36 - For what shall it profit a man, if he shall gain the whole world, and lose his own soul?." "
+\n \t\t\t\t\t\t\t- 1 Corinthians 10:31 " " Whether therefore ye eat, or drink, or whatsoever ye do, do all to the glory of God..
 \n \t\t\t\t\t\t\t- 1 John 1:9" "If we confess our sins, he is faithful and just to forgive us our sins, and to cleanse us from all unrighteousness.
 \n \t\t\t\t\t\t\t- 1 John 3:22" "And whatsoever we ask, we receive of him, because we keep his commandments, and do those things that are pleasing in his sight.
 \n \t\t\t\t\t\t\t- 1 Peter 5:8" "Be sober, be vigilant; because your adversary the devil, as a roaring lion, walketh about, seeking whom he may devour
@@ -25,17 +28,55 @@ var=(" -1 Corinthians 10:13 -- There hath no temptation taken you but such as is
 \n \t\t\t\t\t\t\t- Galatians 6:9 Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up." )
 
 # Welcome message ! Edit it with your name
-# Welcome message ! Edit it with your name
 COLUMNS=$(tput cols)
 tmp1="====================            Welcome back Phil!             ===================="
+#echo $tmp1
 printf "%*s\n" $(((${#tmp1}+$COLUMNS)/2)) "$tmp1"
+printf "%*s\n" $(((${#var}+$COLUMNS)/2)) "$var"
 #  "\n${var[$a]}"
-echo -e "--------------------------------------------------------------------------------${BC}"
+printf $(((${#tmp1}+$COLUMNS)/2)) "--------------------------------------------------------------------------------${BC}"
+working_directory() {
+    dir=`pwd`
+    in_home=0
+    if [[ `pwd` =~ ^$HOME($|\/) ]]; then
+        dir="~${dir#$HOME}"
+        in_home=1
+    fi
 
+    if [[ `tput cols` -lt 110 ]]; then  # <-- Checking the term width
+        first="/`echo $dir | cut -d / -f 2`"
+        letter=${first:0:2}
+        if [[ $in_home == 1 ]]; then
+            letter="~$letter"
+        fi
+        proj=`echo $dir | cut -d / -f 3`
+        beginning="$letter/$proj"
+        end=`echo "$dir" | rev | cut -d / -f1 | rev`
 
-#echo -e "${color}--------------------------------------------------------------------------------"
-#echo "****************             Welcome back Phil!             *****************"
-#echo -e "\n${var[$a]}"
-#echo -e "--------------------------------------------------------------------------------${BC}"
+        if [[ $proj == "" ]]; then
+            echo $dir
+        elif [[ $proj == "~" ]]; then
+            echo $dir
+        elif [[ $dir =~ "$first/$proj"$ ]]; then
+            echo $beginning
+        elif [[ $dir =~ "$first/$proj/$end"$ ]]; then
+            echo "$beginning/$end"
+        else
+            echo "$beginning/…/$end"
+        fi
+    else
+        echo $dir
+    fi
+}
 
-#end of code
+prompt() {
+    if [[ $? -eq 0 ]]; then
+        exit_status='\[\e[0;34m\]› \[\e[00m\]'
+    else
+        exit_status='\[\e[0;31m\]› \[\e[00m\]'
+    fi
+
+    prompt='\[\e[0;33m\]$(working_directory)\[\e[00m\]\[\e[0;32m\]'
+    PS1=$prompt$exit_status
+}
+PROMPT_COMMAND=prompt
